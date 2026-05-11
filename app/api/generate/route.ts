@@ -59,24 +59,33 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: model || process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      stream: true,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPTS[mode] },
-        { role: "user", content: prompt }
-      ]
-    })
-  });
+  let upstream: Response;
+
+  try {
+    upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: model || process.env.OPENAI_MODEL || "gpt-4.1-mini",
+        stream: true,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPTS[mode] },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
+  } catch {
+    return Response.json(
+      { error: "Could not connect to OpenAI. Check the deployment network and try again." },
+      { status: 502 }
+    );
+  }
 
   if (!upstream.ok || !upstream.body) {
-    const message = await upstream.text();
+    const message = await parseOpenAIError(upstream);
     return Response.json(
       { error: message || "AI provider request failed." },
       { status: upstream.status || 500 }
@@ -124,4 +133,18 @@ export async function POST(request: NextRequest) {
       "Cache-Control": "no-cache"
     }
   });
+}
+
+async function parseOpenAIError(response: Response) {
+  const fallback = `OpenAI request failed with status ${response.status}.`;
+  const body = await response.text();
+
+  if (!body) return fallback;
+
+  try {
+    const json = JSON.parse(body);
+    return json.error?.message || json.message || fallback;
+  } catch {
+    return body.slice(0, 500);
+  }
 }

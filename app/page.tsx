@@ -138,7 +138,8 @@ export default function Home() {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error("Generation failed.");
+        const message = await readErrorMessage(response);
+        throw new Error(message);
       }
 
       const reader = response.body.getReader();
@@ -165,8 +166,11 @@ export default function Home() {
         },
         ...items.slice(0, 7)
       ]);
-    } catch {
-      const message = "Something went wrong while generating. Check your OpenAI API key in Vercel and redeploy.";
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while generating. Check your OpenAI API key in Vercel and redeploy.";
       setNotice(message);
       setOutput(message);
     } finally {
@@ -368,6 +372,15 @@ export default function Home() {
       </section>
     </main>
   );
+}
+
+async function readErrorMessage(response: Response) {
+  try {
+    const data = await response.json();
+    return data.error || "Generation failed.";
+  } catch {
+    return "Generation failed. Check your OpenAI API key in Vercel and redeploy.";
+  }
 }
 
 function PlanCard({
