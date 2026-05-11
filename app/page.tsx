@@ -110,16 +110,19 @@ export default function Home() {
   async function generate() {
     if (!signedIn) {
       setNotice("Sign in first to use credits.");
+      setOutput("Sign in with your email first, then click Generate again.");
       return;
     }
 
     if (credits <= 0) {
       setNotice("You are out of credits. Upgrade to keep generating.");
+      setOutput("You are out of credits. Choose Pro or Business to continue generating.");
       return;
     }
 
     if (prompt.trim().length < 3) {
       setNotice("Add a prompt with at least 3 characters.");
+      setOutput("Add a prompt with at least 3 characters.");
       return;
     }
 
@@ -163,7 +166,9 @@ export default function Home() {
         ...items.slice(0, 7)
       ]);
     } catch {
-      setNotice("Something went wrong while generating. Check your API key and try again.");
+      const message = "Something went wrong while generating. Check your OpenAI API key in Vercel and redeploy.";
+      setNotice(message);
+      setOutput(message);
     } finally {
       setIsGenerating(false);
     }
@@ -329,6 +334,8 @@ export default function Home() {
             </button>
             <span>{signedIn ? `${credits} credits remaining` : "Sign in to generate"}</span>
           </div>
+
+          {notice ? <div className="generator-notice">{notice}</div> : null}
 
           <div className="output-panel">
             <div className="output-header">
