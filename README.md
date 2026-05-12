@@ -252,57 +252,6 @@ STRIPE_BUSINESS_PRICE_ID=your_business_price_id
 NEXT_PUBLIC_APP_URL=https://your-vercel-app-url.vercel.app
 ```
 
-## Important Note About Demo Mode
-
-If `OPENAI_API_KEY` is not added, the app uses the smart demo generator. This is useful when you do not have paid OpenAI billing.
-
-If an invalid OpenAI key or quota-limited OpenAI key is added, the app will try OpenAI and may show an API error. For free demo mode, remove `OPENAI_API_KEY` from Vercel.
-
-## Deploy To GitHub
-
-```bash
-git init
-git add .
-git commit -m "Build AI SaaS app"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-git push -u origin main
-```
-
-## Deploy To Vercel
-
-1. Push the project to GitHub.
-2. Go to Vercel.
-3. Click **Add New Project**.
-4. Import the GitHub repository.
-5. Keep the framework preset as **Next.js**.
-6. Add environment variables.
-7. Click **Deploy**.
-8. After deployment, update `NEXT_PUBLIC_APP_URL` to the final Vercel URL.
-9. Redeploy if environment variables were changed.
-
-## Deploy To Render
-
-Vercel is recommended for this project, but Render can also be used.
-
-1. Push the project to GitHub.
-2. Create a Render **Web Service**.
-3. Connect the GitHub repository.
-4. Use this build command:
-
-```bash
-npm install && npm run build
-```
-
-5. Use this start command:
-
-```bash
-npm run start
-```
-
-6. Add environment variables.
-7. Deploy.
-
 ## Future Improvements
 
 - Add real authentication with NextAuth or Clerk
