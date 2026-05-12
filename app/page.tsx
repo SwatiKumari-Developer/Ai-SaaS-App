@@ -104,7 +104,11 @@ export default function Home() {
     }
 
     setSignedIn(true);
-    setNotice("Workspace created. Free credits added.");
+    setPlan("Free");
+    setCredits(planCredits.Free);
+    setHistory([]);
+    setOutput("");
+    setNotice("Session refreshed. Free plan and credits restored.");
   }
 
   async function generate() {
@@ -196,6 +200,12 @@ export default function Home() {
     setNotice(`${nextPlan} activated in demo mode. Add Stripe keys for live payments.`);
   }
 
+  function selectFreePlan() {
+    setPlan("Free");
+    setCredits(planCredits.Free);
+    setNotice("Free plan selected. You have 10 demo credits.");
+  }
+
   const ActiveModeIcon = modeConfig[mode].icon;
 
   return (
@@ -270,7 +280,13 @@ export default function Home() {
             </div>
           </div>
           <div className="plan-list">
-            <PlanCard name="Free" price="$0" credits="10 credits" active={plan === "Free"} />
+            <PlanCard
+              name="Free"
+              price="$0"
+              credits="10 credits"
+              active={plan === "Free"}
+              onClick={selectFreePlan}
+            />
             <PlanCard
               name="Pro"
               price="$19"
